@@ -193,7 +193,7 @@ class Prop_state:
             top_bert_dis[i]=0.2
 
 
-        embed_ind=self.embed_prob(attacked_id)
+        embed_ind=self.embed_prob.prob(attacked_id)
         embed_dis=torch.zeros(len(self.tokenizer))
         for i in embed_ind:
             embed_dis[i]=0.2
