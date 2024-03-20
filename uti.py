@@ -52,8 +52,8 @@ class sentence_similarity:
 class embed_prob:
     def __init__(self):
         embedding_matrix=torch.load('with_embed.pt')
-                # Convert embedding_matrix to NumPy array
-        embedding_matrix_np = embedding_matrix.detach().numpy()
+                 # Convert embedding_matrix to NumPy array
+        embedding_matrix_np = torch.tensor(embedding_matrix).detach().numpy()
         self.neighbors=NearestNeighbors(n_neighbors=5)
         self.neighbors.fit(embedding_matrix)
         # self.tokenizer = AutoTokenizer.from_pretrained("roberta-large")
