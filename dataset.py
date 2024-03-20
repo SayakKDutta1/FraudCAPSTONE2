@@ -11,7 +11,7 @@ from transformers import BertTokenizer, BertForMaskedLM
 # tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 class MHDataset(Dataset):
     def __init__(self, data_name, tokenizer,cuda=False):
-        self.data = torch.load('datasets/'+data_name+'.pt')['test']
+        self.data = torch.load('/kaggle/working/'+data_name+'.pt')['test']
         self.cuda = cuda
         self.tokenizer = tokenizer
     def __len__(self):
