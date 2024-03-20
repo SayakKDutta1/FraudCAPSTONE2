@@ -51,28 +51,19 @@ class sentence_similarity:
 
 class embed_prob:
     def __init__(self):
-        embedding_matrix = torch.load('with_embed.pt')  # Assuming 'with_embed.pt' contains your embedding matrix
-        if isinstance(embedding_matrix, list):
-            embedding_matrix_tensor = torch.tensor(embedding_matrix)  # Convert list to PyTorch tensor
-            self.embedding_matrix_cpu = embedding_matrix_tensor.cpu()  # Move tensor to CPU
-        else:
-            self.embedding_matrix_cpu = embedding_matrix.cpu()  # Move tensor to CPU
-        self.neighbors = NearestNeighbors(n_neighbors=5)
-        self.neighbors.fit(self.embedding_matrix_cpu)
-
+        embedding_matrix=torch.load('with_embed.pt')
+        self.neighbors=NearestNeighbors(n_neighbors=5)
+        self.neighbors.fit(embedding_matrix)
         # self.tokenizer = AutoTokenizer.from_pretrained("roberta-large")
         self.model = AutoModelForMaskedLM.from_pretrained("roberta-large", output_hidden_states=True)
-
-    def prob(self, id):
-        input = torch.tensor([id])
-        input = torch.cat((torch.tensor([0]), input, torch.tensor([2]))).unsqueeze(0)
-        can = self.model(input)['hidden_states'][0].squeeze()[1, :].tolist()
-        can = [can]
-        indices = self.neighbors.kneighbors(can, return_distance=False)
-        indices = torch.from_numpy(indices.squeeze())[1:]
+    def prob(self,id):
+        input=torch.tensor([id])
+        input=torch.cat((torch.tensor([0]),input,torch.tensor([2]))).unsqueeze(0)
+        can=self.model(input)['hidden_states'][0].squeeze()[1,:].tolist()
+        can=[can]
+        indices=self.neighbors.kneighbors(can, return_distance=False)
+        indices=torch.from_numpy(indices.squeeze())[1:]
         return indices
-
-
 
 
 
@@ -100,4 +91,3 @@ class victim_models:
         prob=F.softmax(outputs).squeeze()
         pre_label=torch.argmax(prob)
         return pre_label
-
