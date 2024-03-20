@@ -22,7 +22,7 @@ def sampling_attacker(args):
     semantic_sim = sentence_similarity()
     rouge_sim=rouge_score('rouge1')
     victim_classifier =victim_models(args.victim_model_name)
-    embed_search=embed_prob()
+    embed_search=embed_prob().cpu()
     dataset=MHDataset(args.dataset, BERT_tokenizer)
     dataloader=DataLoader.DataLoader(dataset,batch_size=1,shuffle=False)
     data_itr=tqdm.tqdm(enumerate(dataloader),
