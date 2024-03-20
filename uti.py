@@ -51,9 +51,10 @@ class sentence_similarity:
 
 class embed_prob:
     def __init__(self):
-        embedding_matrix=torch.load('with_embed.pt')
-        self.neighbors=NearestNeighbors(n_neighbors=5)
-        self.neighbors.fit(embedding_matrix)
+        embedding_matrix = torch.load('with_embed.pt')  # Assuming 'with_embed.pt' contains your embedding matrix
+        self.embedding_matrix_cpu = embedding_matrix.cpu()  # Move tensor to CPU
+        self.neighbors = NearestNeighbors(n_neighbors=5)
+        self.neighbors.fit(self.embedding_matrix_cpu)
         # self.tokenizer = AutoTokenizer.from_pretrained("roberta-large")
         self.model = AutoModelForMaskedLM.from_pretrained("roberta-large", output_hidden_states=True)
     def prob(self,id):
