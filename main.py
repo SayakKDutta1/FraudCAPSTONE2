@@ -11,7 +11,15 @@ import torch.utils.data as DataLoader
 import tqdm
 from transformers import AutoTokenizer, AutoModelForMaskedLM
 
-
+class embed_prob():
+    def __init__(self, embedding_matrix):
+        self.embedding_matrix = embedding_matrix
+        self.neighbors = NearestNeighbors(n_neighbors=5, algorithm='ball_tree')
+        # If embedding_matrix is a CUDA tensor, move it to CPU before fitting
+        if embedding_matrix.is_cuda:
+            self.neighbors.fit(embedding_matrix.cpu().numpy())
+        else:
+            self.neighbors.fit(embedding_matrix.numpy())
 
 def sampling_attacker(args):
 
@@ -22,7 +30,6 @@ def sampling_attacker(args):
     semantic_sim = sentence_similarity()
     rouge_sim=rouge_score('rouge1')
     victim_classifier =victim_models(args.victim_model_name)
-    embed_search=embed_prob().cpu()
     dataset=MHDataset(args.dataset, BERT_tokenizer)
     dataloader=DataLoader.DataLoader(dataset,batch_size=1,shuffle=False)
     data_itr=tqdm.tqdm(enumerate(dataloader),
@@ -56,7 +63,6 @@ def sampling_attacker(args):
             proposal,
             args.num_class,
         )
-        # print('the original input is:',input_id.shape)
 
         exmaple_ids, examples, rouge_value ,best_adv, best_index, best_rouge, success=MH_sampler.mcmc_iteration()
         results.append({'text_id':text_id,
@@ -108,10 +114,6 @@ def args_parser():
 
 if __name__ == '__main__':
     args=args_parser()
+    embedding_matrix = torch.randn(100, 50)  # Example of creating embedding_matrix
+    embed_search = embed_prob(embedding_matrix)
     sampling_attacker(args)
-
-# python main.py --dataset emotion --victim_model_name bhadresh-savani/distilbert-base-uncased-emotion --num_class 2 --Lambda 0.15
-# python main.py --dataset sst2 --victim_model_name philschmid/tiny-bert-sst2-distilled --num_class 2 --Lambda 0.15
-# nohup python -u main.py > ag_news.txt 2>&1 &
-# nohup python -u main.py --dataset emotion --victim_model_name bhadresh-savani/distilbert-base-uncased-emotion --num_class 2 --Lambda 0.15 > emotion_iter.txt 2>&1 &
-# nohup python -u main.py --dataset sst2 --victim_model_name philschmid/tiny-bert-sst2-distilled --num_class 2 --Lambda 0.15 > ss2_iter.txt 2>&1 &
