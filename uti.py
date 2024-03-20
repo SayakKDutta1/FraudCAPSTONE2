@@ -53,10 +53,10 @@ class embed_prob:
     def __init__(self):
         embedding_matrix_a = torch.load('with_embed.pt')
         embedding_matrix = [tensor.detach().numpy() for tensor in embedding_matrix_a]
-        self.neighbors=NearestNeighbors(n_neighbors=5)
+        self.neighbors = NearestNeighbors(n_neighbors=5)
         self.neighbors.fit(embedding_matrix)
-        # self.tokenizer = AutoTokenizer.from_pretrained("roberta-large")
         self.model = AutoModelForMaskedLM.from_pretrained("roberta-large", output_hidden_states=True)
+
     def prob(self,id):
         input=torch.tensor([id])
         input=torch.cat((torch.tensor([0]),input,torch.tensor([2]))).unsqueeze(0)
