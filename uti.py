@@ -52,8 +52,11 @@ class sentence_similarity:
 class embed_prob:
     def __init__(self):
         embedding_matrix = torch.load('with_embed.pt')  # Assuming 'with_embed.pt' contains your embedding matrix
-        embedding_matrix_tensor = torch.tensor(embedding_matrix)  # Convert list to PyTorch tensor
-        self.embedding_matrix_cpu = embedding_matrix_tensor.cpu()  # Move tensor to CPU
+        if isinstance(embedding_matrix, list):
+            embedding_matrix_tensor = torch.tensor(embedding_matrix)  # Convert list to PyTorch tensor
+            self.embedding_matrix_cpu = embedding_matrix_tensor.cpu()  # Move tensor to CPU
+        else:
+            self.embedding_matrix_cpu = embedding_matrix.cpu()  # Move tensor to CPU
         self.neighbors = NearestNeighbors(n_neighbors=5)
         self.neighbors.fit(self.embedding_matrix_cpu)
 
@@ -68,6 +71,7 @@ class embed_prob:
         indices = self.neighbors.kneighbors(can, return_distance=False)
         indices = torch.from_numpy(indices.squeeze())[1:]
         return indices
+
 
 
 
